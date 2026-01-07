@@ -11,6 +11,7 @@ export interface ScreenshotOptions {
   quiet: boolean;
   parallel: number;
   output: string;
+  timeout: number;
 }
 
 export interface ScreenshotResult {

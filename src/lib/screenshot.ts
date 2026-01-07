@@ -34,7 +34,7 @@ export async function processUrl(
         console.error(`  Opening: ${inputUrl}`);
       }
 
-      await page.goto(inputUrl, { waitUntil: 'networkidle', timeout: 45000 });
+      await page.goto(inputUrl, { waitUntil: 'networkidle', timeout: options.timeout });
 
       if (options.verbose) {
         console.error(`  After goto: ${page.url()}`);

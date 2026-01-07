@@ -53,6 +53,7 @@ cat urls.txt | og-screenshot [OPTIONS]
 | `--version` | Show version | |
 | `-o, --output <dir>` | Output directory | `output` |
 | `--parallel <n>` | Max parallel browser tabs | `10` |
+| `--timeout <ms>` | Navigation timeout in milliseconds | `45000` |
 | `--width <n>` | Viewport width in pixels | `1200` |
 | `--height <n>` | Viewport height in pixels | `2000` |
 | `--scale <factor>` | Device scale factor (smaller = more content) | `0.8` |
@@ -107,6 +108,14 @@ echo "https://example.com" | ./og-screenshot
 
 # Combine options
 cat urls.txt | ./og-screenshot --parallel 20 --quiet --plain > results.txt
+
+# Timeout for slow sites
+./og-screenshot --timeout 120000 https://slow-site.com
+
+# Environment variable defaults
+export OG_SCREENSHOT_PARALLEL=20
+export OG_SCREENSHOT_TIMEOUT=60000
+./og-screenshot url1 url2
 ```
 
 ## Output Modes
@@ -251,7 +260,24 @@ bun run install-browser
 
 ## Environment Variables
 
-None currently used. Future: `OG_SCREENSHOT_PARALLEL`, `OG_SCREENSHOT_OUTPUT_DIR`
+Configure defaults via environment variables. CLI flags take precedence.
+
+| Variable | Description | Default |
+|----------|-------------|---------|
+| `NO_COLOR` | Disable colored/emoji output | (not set) |
+| `OG_SCREENSHOT_OUTPUT_DIR` | Default output directory | `output` |
+| `OG_SCREENSHOT_PARALLEL` | Default parallel browser tabs | `10` |
+| `OG_SCREENSHOT_TIMEOUT` | Default navigation timeout (ms) | `45000` |
+| `OG_SCREENSHOT_WIDTH` | Default viewport width | `1200` |
+| `OG_SCREENSHOT_HEIGHT` | Default viewport height | `2000` |
+
+**Example**:
+```bash
+export OG_SCREENSHOT_PARALLEL=20
+export OG_SCREENSHOT_TIMEOUT=60000
+og-screenshot url1 url2  # Uses env var defaults
+og-screenshot --parallel 5 url  # CLI flag overrides env var
+```
 
 ## Troubleshooting
 

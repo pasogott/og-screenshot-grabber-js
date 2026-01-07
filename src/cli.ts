@@ -37,6 +37,7 @@ async function main() {
     .argument('[urls...]', 'URLs to screenshot (use - for stdin, or pipe directly)')
     .option('-o, --output <dir>', 'Output directory', 'output')
     .option('--parallel <n>', 'Max parallel browser tabs', (val) => parseInt(val, 10), 10)
+    .option('--timeout <ms>', 'Navigation timeout in milliseconds', (val) => parseInt(val, 10), 45000)
     .option('--width <n>', 'Viewport width in pixels', (val) => parseInt(val, 10), 1200)
     .option('--height <n>', 'Viewport height in pixels', (val) => parseInt(val, 10), 2000)
     .option('--scale <factor>', 'Device scale factor / zoom', (val) => parseFloat(val), 0.8)
@@ -66,8 +67,13 @@ Exit Codes:
   1   Some URLs failed
   2   All URLs failed or invalid usage
 
-Environment:
-  NO_COLOR  Disable colored/emoji output
+Environment Variables:
+  NO_COLOR                   Disable colored/emoji output
+  OG_SCREENSHOT_OUTPUT_DIR   Default output directory
+  OG_SCREENSHOT_PARALLEL     Default parallel browser tabs
+  OG_SCREENSHOT_TIMEOUT      Default navigation timeout (ms)
+  OG_SCREENSHOT_WIDTH        Default viewport width
+  OG_SCREENSHOT_HEIGHT       Default viewport height
 
 Repository: https://github.com/user/og-screenshot-grabber-js
     `
@@ -85,15 +91,17 @@ Repository: https://github.com/user/og-screenshot-grabber-js
     process.exit(2);
   }
 
+  // Environment variable support with precedence: CLI flags > Env vars > Defaults
   const options: ScreenshotOptions = {
-    width: cliOptions.width,
-    height: cliOptions.height,
+    output: cliOptions.output || process.env.OG_SCREENSHOT_OUTPUT_DIR || 'output',
+    parallel: cliOptions.parallel || parseInt(process.env.OG_SCREENSHOT_PARALLEL || '10', 10),
+    timeout: cliOptions.timeout || parseInt(process.env.OG_SCREENSHOT_TIMEOUT || '45000', 10),
+    width: cliOptions.width || parseInt(process.env.OG_SCREENSHOT_WIDTH || '1200', 10),
+    height: cliOptions.height || parseInt(process.env.OG_SCREENSHOT_HEIGHT || '2000', 10),
     scale: cliOptions.scale,
     fullPage: cliOptions.fullPage,
     verbose: cliOptions.verbose,
     quiet: cliOptions.quiet,
-    parallel: cliOptions.parallel,
-    output: cliOptions.output,
   };
 
   // Setup output directory

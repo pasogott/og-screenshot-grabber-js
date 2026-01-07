@@ -281,14 +281,14 @@ export async function collectUrls(args: string[]): Promise<string[]> {
 
 ## Implementation Checklist
 
-- [ ] Add NO_COLOR support to output.ts
-- [ ] Add .addHelpText() to cli.ts
-- [ ] Add SIGINT handler to cli.ts
-- [ ] Add URL validation to input.ts
-- [ ] Add `--timeout` flag
-- [ ] Add env var support
-- [ ] Add `-` for stdin mixing
-- [ ] Update README with new features
+- [x] Add NO_COLOR support to output.ts
+- [x] Add .addHelpText() to cli.ts
+- [x] Add SIGINT handler to cli.ts
+- [x] Add URL validation to input.ts
+- [x] Add `--timeout` flag
+- [x] Add env var support (OG_SCREENSHOT_*)
+- [x] Add `-` for stdin mixing
+- [x] Update README with new features
 - [ ] Update tests (if any)
 
 ---

@@ -159,8 +159,8 @@ See `BUILD.md` for details.
 
 ### High Priority
 - [ ] Test suite (unit + integration)
-- [ ] Environment variable support (`OG_SCREENSHOT_*`)
-- [ ] Timeout configuration flag
+- [x] Environment variable support (`OG_SCREENSHOT_*`)
+- [x] Timeout configuration flag
 - [ ] Progress spinner for long operations
 
 ### Medium Priority
@@ -192,8 +192,8 @@ Based on [clig.dev](https://clig.dev):
 - [x] NO_COLOR support
 - [x] Robustness (validation, cleanup)
 - [x] Graceful interrupts (SIGINT)
+- [x] Environment variables (OG_SCREENSHOT_*)
 - [ ] Config file (future)
-- [ ] Environment variables (future)
 
 ---
 
