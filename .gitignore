@@ -1,0 +1,40 @@
+# Bun
+node_modules/
+*.bun
+
+# Outputs
+output/
+*.png
+*.json
+
+# Build
+dist/
+og-screenshot
+
+# Logs
+*.log
+npm-debug.log*
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Env
+.env
+.env.local
+
+# Testing
+coverage/
+.nyc_output/
+
+# Temp
+tmp/
+temp/
+*.tmp
