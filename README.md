@@ -1,5 +1,9 @@
 # og-screenshot-grabber-js
 
+[![CI](https://github.com/pasogott/og-screenshot-grabber-js/workflows/CI/badge.svg)](https://github.com/pasogott/og-screenshot-grabber-js/actions/workflows/ci.yml)
+[![Docker Build & Test](https://github.com/pasogott/og-screenshot-grabber-js/workflows/Docker%20Build%20%26%20Test/badge.svg)](https://github.com/pasogott/og-screenshot-grabber-js/actions/workflows/docker-build.yml)
+[![Release](https://github.com/pasogott/og-screenshot-grabber-js/workflows/Release/badge.svg)](https://github.com/pasogott/og-screenshot-grabber-js/actions/workflows/release.yml)
+
 TypeScript/Bun rewrite of the og-screenshot-grabber tool. Grab screenshots from URLs with automatic cookie banner handling and metadata footer.
 
 ## Features
