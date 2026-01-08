@@ -61,8 +61,8 @@ export function handleOutput(
     }
   }
 
-  // Print errors to stderr
-  if (failures.length && mode !== 'json') {
+  // Print errors to stderr (not in JSON mode)
+  if (failures.length) {
     failures.forEach((failure) => {
       console.error(`Error processing ${failure.url}: ${failure.error}`);
     });
