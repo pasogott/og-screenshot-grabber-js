@@ -32,7 +32,7 @@ docker run --rm -v $(pwd)/output:/app/output og-screenshot https://example.com
 docker-compose run --rm og-screenshot https://example.com
 ```
 
-📖 **See [DOCKER.md](DOCKER.md) for:**
+📖 **See [docs/DOCKER.md](docs/DOCKER.md) for:**
 - Detailed usage examples
 - Environment variables
 - Batch processing
@@ -367,6 +367,12 @@ brew install pkg-config cairo pango libpng jpeg giflib librsvg
 apt-get install libcairo2-dev libpango1.0-dev libjpeg-dev libgif-dev librsvg2-dev
 ```
 
+## Documentation
+
+- 📖 **[Docker Guide](docs/DOCKER.md)** - Comprehensive Docker usage, CI/CD integration, and troubleshooting
+- 🔧 **[Build & Distribution](docs/BUILD.md)** - Different distribution options and limitations
+- 🤖 **[AI Agents Guide](docs/AGENTS.md)** - Guidance for AI coding assistants working with this project
+
 ## License
 
-MIT
+MIT - See [LICENSE](LICENSE) for details
