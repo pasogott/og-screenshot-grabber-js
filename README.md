@@ -13,7 +13,31 @@ TypeScript/Bun rewrite of the og-screenshot-grabber tool. Grab screenshots from 
 
 ## Quick Start
 
-### Installation
+### Option 1: Docker (Recommended for Production/CI)
+
+**No Bun or Node.js required** - fully containerized solution.
+
+```bash
+# Build image
+docker build -t og-screenshot .
+
+# Run single screenshot
+docker run --rm -v $(pwd)/output:/app/output og-screenshot https://example.com
+
+# Or use docker-compose
+docker-compose run --rm og-screenshot https://example.com
+```
+
+📖 **See [DOCKER.md](DOCKER.md) for:**
+- Detailed usage examples
+- Environment variables
+- Batch processing
+- CI/CD integration
+- Troubleshooting
+
+---
+
+### Option 2: Local Install (Development)
 
 ```bash
 # Install dependencies
@@ -23,7 +47,7 @@ bun install
 bun run install-browser
 ```
 
-### Usage
+**Usage:**
 
 ```bash
 # Development mode (no compilation needed)
