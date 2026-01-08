@@ -371,6 +371,7 @@ apt-get install libcairo2-dev libpango1.0-dev libjpeg-dev libgif-dev librsvg2-de
 
 - 📖 **[Docker Guide](docs/DOCKER.md)** - Comprehensive Docker usage, CI/CD integration, and troubleshooting
 - 🔧 **[Build & Distribution](docs/BUILD.md)** - Different distribution options and limitations
+- 🔄 **[GitHub Actions Workflows](docs/WORKFLOWS.md)** - CI/CD pipeline documentation and release process
 - 🤖 **[AI Agents Guide](docs/AGENTS.md)** - Guidance for AI coding assistants working with this project
 
 ## License
