@@ -44,27 +44,38 @@ npm install -g og-screenshot-grabber-js
 
 ---
 
-### Option 3: Docker Container
+### Option 3: Docker Container (Recommended for Production)
 
-```dockerfile
-FROM oven/bun:1
+A production-ready `Dockerfile` is included with multi-stage build and optimized layer caching.
 
-WORKDIR /app
-COPY . .
-RUN bun install
-RUN bunx playwright install chromium --with-deps
-
-ENTRYPOINT ["bun", "run", "src/cli.ts"]
-```
-
-Usage:
+**Build:**
 ```bash
 docker build -t og-screenshot .
-docker run -v $(pwd)/output:/app/output og-screenshot https://example.com
 ```
 
-**Pros**: Fully self-contained, works anywhere
-**Cons**: Requires Docker
+**Run:**
+```bash
+# Single URL
+docker run --rm -v $(pwd)/output:/app/output og-screenshot https://example.com
+
+# Or use docker-compose
+docker-compose run --rm og-screenshot https://example.com
+
+# Test the setup
+./docker-test.sh
+```
+
+**Pros**: 
+- Fully self-contained, works anywhere
+- No Bun/Node.js required on host
+- Perfect for CI/CD
+- Optimized multi-stage build
+
+**Cons**: 
+- Requires Docker
+- ~1.2GB image size (due to Chromium)
+
+📖 **See [DOCKER.md](DOCKER.md)** for detailed usage, environment variables, and CI/CD examples.
 
 ---
 
