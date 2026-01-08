@@ -1,0 +1,42 @@
+# Git files
+.git
+.gitignore
+.gitattributes
+
+# Documentation
+*.md
+!README.md
+
+# IDE
+.cursor
+.vscode
+.idea
+
+# Dependencies (will be installed in container)
+node_modules
+
+# Build outputs
+dist
+build
+*.log
+
+# Test files
+*.test.ts
+tests/
+
+# Output directory (will be mounted)
+output/
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Temporary files
+tmp/
+temp/
+*.tmp
