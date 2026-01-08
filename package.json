@@ -1,0 +1,38 @@
+{
+  "name": "og-screenshot-grabber-js",
+  "version": "1.0.0",
+  "description": "Screenshot grabber with cookie handling and metadata footer",
+  "type": "module",
+  "bin": {
+    "og-screenshot": "./src/cli.ts"
+  },
+  "scripts": {
+    "dev": "bun run src/cli.ts",
+    "build": "echo 'Note: Bun --compile does not work with Playwright (too complex)' && echo 'Use: bun run src/cli.ts or link globally with bun link'",
+    "link": "bun link",
+    "install-browser": "bunx playwright install chromium",
+    "test": "bun test",
+    "lint": "echo 'No linting configured yet'"
+  },
+  "keywords": [
+    "screenshot",
+    "playwright",
+    "og-image",
+    "facebook",
+    "automation"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "canvas": "^3.2.0",
+    "commander": "^14.0.2",
+    "playwright": "^1.57.0",
+    "sharp": "^0.34.5"
+  },
+  "devDependencies": {
+    "@types/bun": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "^5"
+  }
+}
