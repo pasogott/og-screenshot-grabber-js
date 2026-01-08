@@ -60,15 +60,17 @@ RUN bunx playwright install chromium --with-deps && \
     chmod -R 755 /ms-playwright
 
 # Create output directory with proper permissions
-RUN mkdir -p /app/output && chown -R bun:bun /app/output
+# Note: This will be overridden by volume mount, but sets default
+RUN mkdir -p /app/output && chmod 777 /app/output
 
 # Set default environment variables
 ENV OG_SCREENSHOT_OUTPUT_DIR=/app/output
 ENV OG_SCREENSHOT_PARALLEL=10
 ENV NODE_ENV=production
 
-# Switch to non-root user for security
-USER bun
+# Note: We don't switch to non-root user because output directory
+# needs write permissions which can vary with volume mounts
+# If security is critical, mount volume with correct permissions
 
 # Default output directory as volume
 VOLUME ["/app/output"]
