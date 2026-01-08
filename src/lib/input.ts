@@ -2,6 +2,7 @@
  * Input handling (stdin, args, file)
  */
 import { createInterface } from 'readline';
+import { readFile, access } from 'fs/promises';
 
 /**
  * Validate URL format
@@ -12,6 +13,33 @@ export function validateUrl(url: string): boolean {
     return true;
   } catch {
     return false;
+  }
+}
+
+/**
+ * Read URLs from a file (one per line)
+ */
+export async function readUrlsFromFile(filePath: string): Promise<string[]> {
+  // Check if file exists
+  try {
+    await access(filePath);
+  } catch {
+    console.error(`Error: File not found: ${filePath}\n`);
+    console.error('Make sure the file exists and is readable.');
+    process.exit(2);
+  }
+
+  // Read and parse file
+  try {
+    const content = await readFile(filePath, 'utf-8');
+    return content
+      .split('\n')
+      .map((line) => line.trim())
+      .filter((line) => line && !line.startsWith('#'));
+  } catch (error) {
+    console.error(`Error: Failed to read file: ${filePath}\n`);
+    console.error(error instanceof Error ? error.message : String(error));
+    process.exit(2);
   }
 }
 
@@ -37,30 +65,36 @@ export async function readUrlsFromStdin(): Promise<string[]> {
 }
 
 /**
- * Collect URLs from args and/or stdin
+ * Collect URLs from args and/or stdin and/or file
  */
-export async function collectUrls(args: string[]): Promise<string[]> {
+export async function collectUrls(args: string[], filePath?: string): Promise<string[]> {
   let urls: string[] = [];
   let shouldReadStdin = false;
 
-  // Check for explicit stdin marker `-`
-  if (args.includes('-')) {
-    urls = args.filter((arg) => arg !== '-');
-    shouldReadStdin = true;
-  } else if (args.length === 0 && !process.stdin.isTTY) {
-    // Auto-detect stdin when no args
-    shouldReadStdin = true;
-  } else {
-    urls = [...args];
+  // 1. Read from file if specified
+  if (filePath) {
+    const fileUrls = await readUrlsFromFile(filePath);
+    urls.push(...fileUrls);
   }
 
-  // Read from stdin if needed
+  // 2. Check for explicit stdin marker `-`
+  if (args.includes('-')) {
+    urls.push(...args.filter((arg) => arg !== '-'));
+    shouldReadStdin = true;
+  } else if (args.length === 0 && !process.stdin.isTTY && !filePath) {
+    // Auto-detect stdin when no args and no file
+    shouldReadStdin = true;
+  } else {
+    urls.push(...args);
+  }
+
+  // 3. Read from stdin if needed
   if (shouldReadStdin) {
     const stdinUrls = await readUrlsFromStdin();
     urls.push(...stdinUrls);
   }
 
-  // Validate all URLs
+  // 4. Validate all URLs
   const invalid = urls.filter((url) => !validateUrl(url));
   if (invalid.length > 0) {
     console.error('Error: Invalid URLs detected:');

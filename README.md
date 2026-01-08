@@ -52,6 +52,7 @@ cat urls.txt | og-screenshot [OPTIONS]
 | `-h, --help` | Show help | |
 | `--version` | Show version | |
 | `-o, --output <dir>` | Output directory | `output` |
+| `-f, --file <path>` | Read URLs from file (one per line) | |
 | `--parallel <n>` | Max parallel browser tabs | `10` |
 | `--timeout <ms>` | Navigation timeout in milliseconds | `45000` |
 | `--width <n>` | Viewport width in pixels | `1200` |
@@ -73,6 +74,12 @@ cat urls.txt | og-screenshot [OPTIONS]
 
 # Multiple URLs
 ./og-screenshot url1 url2 url3
+
+# From file
+./og-screenshot --file urls.txt
+
+# Combine file + args
+./og-screenshot --file urls.txt https://extra.com
 
 # From stdin (pipe-friendly)
 cat urls.txt | ./og-screenshot
@@ -127,6 +134,9 @@ export OG_SCREENSHOT_TIMEOUT=60000
 
 # Test with invalid env var (shows warning)
 OG_SCREENSHOT_PARALLEL=invalid ./og-screenshot --show-config
+
+# Multiple input sources (file + stdin + args)
+cat more.txt | ./og-screenshot --file urls.txt - https://another.com
 ```
 
 ## Output Modes
@@ -295,6 +305,20 @@ og-screenshot --parallel 5 url  # CLI flag overrides env var
 $ OG_SCREENSHOT_PARALLEL=invalid og-screenshot --dry-run url
 Warning: Invalid OG_SCREENSHOT_PARALLEL="invalid", using default 10
 ```
+
+## Version Information
+
+Show detailed version information including runtime versions:
+
+```bash
+$ og-screenshot --version
+og-screenshot 1.0.0
+  bun: 1.3.5
+  playwright: 1.57.0
+  node: v24.3.0
+```
+
+Useful for bug reports and compatibility checking.
 
 ## Troubleshooting
 

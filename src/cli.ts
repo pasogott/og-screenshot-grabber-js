@@ -11,8 +11,25 @@ import { collectUrls } from './lib/input.js';
 import { handleOutput, getExitCode, type OutputMode } from './lib/output.js';
 import { getEnvInt, getEnvString, showConfiguration } from './lib/config.js';
 import type { ScreenshotOptions } from './types/index.js';
+import pkg from '../package.json';
 
-const VERSION = '1.0.0';
+const VERSION = pkg.version;
+
+// Version info formatter
+const getVersionInfo = (): string => {
+  const lines = [
+    `og-screenshot ${VERSION}`,
+    `  bun: ${Bun.version}`,
+    `  playwright: ${pkg.dependencies.playwright.replace('^', '')}`,
+  ];
+
+  // Add node version if available (when not using bun runtime)
+  if (typeof process.versions.node !== 'undefined') {
+    lines.push(`  node: v${process.versions.node}`);
+  }
+
+  return lines.join('\n');
+};
 
 // Cleanup function for graceful shutdown
 let cleanupFn: (() => Promise<void>) | null = null;
@@ -34,9 +51,10 @@ async function main() {
   program
     .name('og-screenshot')
     .description('Grab screenshots from URLs with cookie handling and metadata footer')
-    .version(VERSION)
+    .version(getVersionInfo(), '-V, --version', 'output the version number')
     .argument('[urls...]', 'URLs to screenshot (use - for stdin, or pipe directly)')
     .option('-o, --output <dir>', 'Output directory', 'output')
+    .option('-f, --file <path>', 'Read URLs from file (one per line)')
     .option('--parallel <n>', 'Max parallel browser tabs', (val) => parseInt(val, 10), 10)
     .option('--timeout <ms>', 'Navigation timeout in milliseconds', (val) => parseInt(val, 10), 45000)
     .option('--width <n>', 'Viewport width in pixels', (val) => parseInt(val, 10), 1200)
@@ -55,6 +73,8 @@ async function main() {
 Examples:
   $ og-screenshot https://example.com
   $ og-screenshot url1 url2 url3
+  $ og-screenshot --file urls.txt
+  $ og-screenshot --file urls.txt https://extra.com
   $ cat urls.txt | og-screenshot
   $ cat urls.txt | og-screenshot - https://extra.com
   $ og-screenshot --quiet --plain url1 url2 > paths.txt
@@ -109,8 +129,8 @@ Repository: https://github.com/user/og-screenshot-grabber-js
     process.exit(0);
   }
 
-  // Collect URLs
-  const urls = await collectUrls(program.args);
+  // Collect URLs from args, file, and/or stdin
+  const urls = await collectUrls(program.args, cliOptions.file);
 
   if (urls.length === 0) {
     console.error('Error: No URLs provided\n');

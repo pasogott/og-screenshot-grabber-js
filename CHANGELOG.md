@@ -10,10 +10,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - `--dry-run` flag to preview operations without executing
 - `--show-config` flag to display current configuration
+- `--file` flag to read URLs from file explicitly
+- Better `--version` output showing runtime versions (bun, playwright, node)
 - Environment variable validation with helpful warnings
 - Better error messages with actionable suggestions
 - Verbose mode now shows output directory creation
 - Configuration helper module (`src/lib/config.ts`)
+- Support for combining file + stdin + args input sources
 
 ### Changed
 - Error message when no URLs provided now suggests common usage patterns
