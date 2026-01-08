@@ -53,8 +53,11 @@ COPY --from=builder /app/node_modules ./node_modules
 COPY package.json bun.lock tsconfig.json ./
 COPY src ./src
 
-# Install Playwright browsers (chromium only) - must run as root
-RUN bunx playwright install chromium --with-deps
+# Install Playwright browsers (chromium only)
+# Install as root but set PLAYWRIGHT_BROWSERS_PATH to shared location
+ENV PLAYWRIGHT_BROWSERS_PATH=/ms-playwright
+RUN bunx playwright install chromium --with-deps && \
+    chmod -R 755 /ms-playwright
 
 # Create output directory with proper permissions
 RUN mkdir -p /app/output && chown -R bun:bun /app/output
@@ -64,7 +67,7 @@ ENV OG_SCREENSHOT_OUTPUT_DIR=/app/output
 ENV OG_SCREENSHOT_PARALLEL=10
 ENV NODE_ENV=production
 
-# Switch to non-root user for security (after Playwright install)
+# Switch to non-root user for security
 USER bun
 
 # Default output directory as volume
