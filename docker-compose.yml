@@ -1,0 +1,29 @@
+version: '3.8'
+
+services:
+  og-screenshot:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: og-screenshot-grabber:latest
+    container_name: og-screenshot
+    volumes:
+      # Mount local output directory
+      - ./output:/app/output
+    environment:
+      # Override these as needed
+      - OG_SCREENSHOT_PARALLEL=10
+      - NO_COLOR=0
+    # Pass command-line arguments
+    # Usage: docker-compose run --rm og-screenshot https://example.com
+    stdin_open: true
+    tty: true
+
+  # Example: Batch processing from file
+  og-screenshot-batch:
+    extends: og-screenshot
+    container_name: og-screenshot-batch
+    volumes:
+      - ./output:/app/output
+      - ./urls.txt:/app/urls.txt:ro
+    command: ["--file", "/app/urls.txt", "--parallel", "5", "--verbose"]
