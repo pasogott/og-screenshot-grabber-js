@@ -5,7 +5,8 @@ node_modules/
 # Outputs
 output/
 *.png
-*.json
+# Only ignore output JSON files, not package.json
+output/*.json
 
 # Build
 dist/
