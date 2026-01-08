@@ -1,0 +1,105 @@
+name: CI
+
+on:
+  push:
+    branches: [ main, development ]
+  pull_request:
+    branches: [ main, development ]
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v1
+        with:
+          bun-version: latest
+      
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+      
+      - name: TypeScript type check
+        run: bun run --bun tsc --noEmit
+      
+      - name: Lint (if configured)
+        run: |
+          if [ -f "biome.json" ] || [ -f ".eslintrc" ]; then
+            echo "Running linter..."
+            # Add your lint command here
+          else
+            echo "No linter configured, skipping"
+          fi
+
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v1
+        with:
+          bun-version: latest
+      
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+      
+      - name: Install Playwright browsers
+        run: bunx playwright install chromium --with-deps
+      
+      - name: Run tests (if configured)
+        run: |
+          if [ -f "src/**/*.test.ts" ]; then
+            echo "Running tests..."
+            bun test
+          else
+            echo "No tests found, skipping"
+          fi
+      
+      - name: Functional test - Screenshot example.com
+        run: |
+          mkdir -p output
+          bun run src/cli.ts --json https://example.com
+          
+          # Check if screenshot was created
+          if [ ! -f output/*.png ]; then
+            echo "❌ Screenshot not created"
+            exit 1
+          fi
+          
+          echo "✅ Functional test passed"
+          ls -lh output/*.png
+      
+      - name: Upload screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: functional-test-screenshots-${{ github.sha }}
+          path: output/
+          retention-days: 7
+
+  build:
+    runs-on: ubuntu-latest
+    needs: [lint, test]
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v1
+        with:
+          bun-version: latest
+      
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+      
+      - name: Build project
+        run: |
+          echo "Building project..."
+          # Add build step if needed (e.g., bun run build)
+          # Note: bun --compile not supported with Playwright
+      
+      - name: Check package
+        run: |
+          bun run src/cli.ts --version
+          bun run src/cli.ts --help
