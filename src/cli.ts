@@ -3,12 +3,13 @@
  * CLI entry point for og-screenshot
  */
 import { Command } from 'commander';
-import { mkdir } from 'fs/promises';
+import { mkdir, access } from 'fs/promises';
 import { setupBrowser } from './lib/browser.js';
 import { Semaphore } from './lib/semaphore.js';
 import { processUrlWithProgress } from './lib/screenshot.js';
 import { collectUrls } from './lib/input.js';
 import { handleOutput, getExitCode, type OutputMode } from './lib/output.js';
+import { getEnvInt, getEnvString, showConfiguration } from './lib/config.js';
 import type { ScreenshotOptions } from './types/index.js';
 
 const VERSION = '1.0.0';
@@ -46,6 +47,8 @@ async function main() {
     .option('--json', 'Output JSON Lines format', false)
     .option('-q, --quiet', 'No output except errors', false)
     .option('-v, --verbose', 'Show detailed progress', false)
+    .option('--dry-run', 'Preview operations without executing', false)
+    .option('--show-config', 'Show current configuration and exit', false)
     .addHelpText(
       'after',
       `
@@ -82,30 +85,70 @@ Repository: https://github.com/user/og-screenshot-grabber-js
   program.parse();
 
   const cliOptions = program.opts();
-  const urls = await collectUrls(program.args);
-
-  if (urls.length === 0) {
-    console.error('Error: No URLs provided');
-    console.error('Usage: og-screenshot [OPTIONS] [URL...]');
-    console.error('   or: cat urls.txt | og-screenshot [OPTIONS]');
-    process.exit(2);
-  }
 
   // Environment variable support with precedence: CLI flags > Env vars > Defaults
+  // Note: Commander sets defaults, so we need to check if user actually provided the flag
+  const hasFlag = (name: string) => process.argv.includes(`--${name}`) || process.argv.some(arg => arg.startsWith(`--${name}=`));
+  
   const options: ScreenshotOptions = {
-    output: cliOptions.output || process.env.OG_SCREENSHOT_OUTPUT_DIR || 'output',
-    parallel: cliOptions.parallel || parseInt(process.env.OG_SCREENSHOT_PARALLEL || '10', 10),
-    timeout: cliOptions.timeout || parseInt(process.env.OG_SCREENSHOT_TIMEOUT || '45000', 10),
-    width: cliOptions.width || parseInt(process.env.OG_SCREENSHOT_WIDTH || '1200', 10),
-    height: cliOptions.height || parseInt(process.env.OG_SCREENSHOT_HEIGHT || '2000', 10),
+    output: hasFlag('output') ? cliOptions.output : getEnvString('OG_SCREENSHOT_OUTPUT_DIR', cliOptions.output),
+    parallel: hasFlag('parallel') ? cliOptions.parallel : getEnvInt('OG_SCREENSHOT_PARALLEL', cliOptions.parallel),
+    timeout: hasFlag('timeout') ? cliOptions.timeout : getEnvInt('OG_SCREENSHOT_TIMEOUT', cliOptions.timeout),
+    width: hasFlag('width') ? cliOptions.width : getEnvInt('OG_SCREENSHOT_WIDTH', cliOptions.width),
+    height: hasFlag('height') ? cliOptions.height : getEnvInt('OG_SCREENSHOT_HEIGHT', cliOptions.height),
     scale: cliOptions.scale,
     fullPage: cliOptions.fullPage,
     verbose: cliOptions.verbose,
     quiet: cliOptions.quiet,
+    dryRun: cliOptions.dryRun,
   };
 
+  // Handle --show-config
+  if (cliOptions.showConfig) {
+    showConfiguration(options);
+    process.exit(0);
+  }
+
+  // Collect URLs
+  const urls = await collectUrls(program.args);
+
+  if (urls.length === 0) {
+    console.error('Error: No URLs provided\n');
+    console.error('Try one of these:');
+    console.error('  $ og-screenshot https://example.com');
+    console.error('  $ cat urls.txt | og-screenshot');
+    console.error('  $ og-screenshot --help');
+    process.exit(2);
+  }
+
+  // Handle --dry-run
+  if (options.dryRun) {
+    console.log(`Dry run: Would process ${urls.length} URL${urls.length > 1 ? 's' : ''}:\n`);
+    urls.forEach((url, i) => {
+      console.log(`  [${i + 1}] ${url}`);
+    });
+    console.log();
+    console.log('Configuration:');
+    console.log(`  Output directory: ${options.output}`);
+    console.log(`  Parallel tabs:    ${options.parallel}`);
+    console.log(`  Timeout:          ${options.timeout}ms`);
+    console.log(`  Viewport:         ${options.width}x${options.height} @ ${options.scale}x`);
+    console.log(`  Full page:        ${options.fullPage ? 'yes' : 'no'}`);
+    console.log();
+    console.log('(Use without --dry-run to execute)');
+    process.exit(0);
+  }
+
   // Setup output directory
-  await mkdir(options.output, { recursive: true });
+  try {
+    await access(options.output);
+  } catch {
+    // Directory doesn't exist
+    if (options.verbose) {
+      console.error(`Creating output directory: ${options.output}`);
+    }
+    await mkdir(options.output, { recursive: true });
+  }
 
   const isTTY = process.stdout.isTTY || false;
 

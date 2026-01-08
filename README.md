@@ -62,6 +62,8 @@ cat urls.txt | og-screenshot [OPTIONS]
 | `--json` | Output JSON Lines format | `false` |
 | `-q, --quiet` | No output except errors | `false` |
 | `-v, --verbose` | Show detailed progress | `false` |
+| `--dry-run` | Preview operations without executing | `false` |
+| `--show-config` | Show current configuration and exit | `false` |
 
 ### Examples
 
@@ -116,6 +118,15 @@ cat urls.txt | ./og-screenshot --parallel 20 --quiet --plain > results.txt
 export OG_SCREENSHOT_PARALLEL=20
 export OG_SCREENSHOT_TIMEOUT=60000
 ./og-screenshot url1 url2
+
+# Preview operations (dry run)
+./og-screenshot --dry-run url1 url2 url3
+
+# Show current configuration
+./og-screenshot --show-config
+
+# Test with invalid env var (shows warning)
+OG_SCREENSHOT_PARALLEL=invalid ./og-screenshot --show-config
 ```
 
 ## Output Modes
@@ -277,6 +288,12 @@ export OG_SCREENSHOT_PARALLEL=20
 export OG_SCREENSHOT_TIMEOUT=60000
 og-screenshot url1 url2  # Uses env var defaults
 og-screenshot --parallel 5 url  # CLI flag overrides env var
+```
+
+**Validation**: Invalid environment variables are detected and warnings are shown:
+```bash
+$ OG_SCREENSHOT_PARALLEL=invalid og-screenshot --dry-run url
+Warning: Invalid OG_SCREENSHOT_PARALLEL="invalid", using default 10
 ```
 
 ## Troubleshooting

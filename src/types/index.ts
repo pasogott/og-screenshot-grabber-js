@@ -12,6 +12,7 @@ export interface ScreenshotOptions {
   parallel: number;
   output: string;
   timeout: number;
+  dryRun: boolean;
 }
 
 export interface ScreenshotResult {
